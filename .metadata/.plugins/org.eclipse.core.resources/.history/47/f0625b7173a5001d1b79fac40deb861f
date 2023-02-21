@@ -1,0 +1,68 @@
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import java.security.Key;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.Security;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+import java.util.Base64;
+import java.util.Base64.Decoder;
+import java.util.Enumeration;
+
+import ru.CryptoPro.Crypto.CryptoProvider;
+import ru.CryptoPro.JCP.JCP;
+import ru.CryptoPro.JCSP.JCSP;
+import ru.CryptoPro.reprov.RevCheck;
+
+
+public class CrptApi {
+
+	public static void main(String[] args) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
+		System.setProperty("file.encoding", "UTF-8");
+		Security.addProvider(new JCSP()); // провайдер JCSP
+		Security.addProvider(new RevCheck());// провайдер проверки сертификатов JCPRevCheck
+		//(revocation-провайдер)
+		Security.addProvider(new CryptoProvider());// провайдер шифрования JCryptoP/
+		
+		KeyStore keyStore = KeyStore.getInstance(JCP.HD_STORE_NAME);	
+	}
+	 
+	static public X509Certificate getX509Certificate(String encodedString) {
+		  if (encodedString == null) {
+		   return null;
+		  }
+
+		  Decoder decoder = Base64.getDecoder();
+		  byte[] decodedData = decoder.decode(encodedString);
+
+		  try (InputStream inputStream = new ByteArrayInputStream(decodedData)) {
+		   CertificateFactory cf = CertificateFactory.getInstance("X.509");
+
+		   java.security.cert.Certificate certificate = cf.generateCertificate(inputStream);
+
+		   if (certificate instanceof X509Certificate) {
+		    return (X509Certificate) certificate;
+		   }
+
+		  } catch (Exception e) {
+		   e.printStackTrace();
+		  }
+
+		  return null;
+
+		 }
+
+	public synchronized void sendDoc(Object doc, String cert) {
+		X509Certificate crt = getX509Certificate(cert);
+		
+	}
+	
+	
+}

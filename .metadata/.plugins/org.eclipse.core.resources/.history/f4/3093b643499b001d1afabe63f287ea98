@@ -1,0 +1,13 @@
+
+public class CrptApi {
+
+	public static void main(String[] args) {
+	
+	}
+
+	public synchronized void sendDoc(Object doc, String cert) {
+		
+	}
+	
+	
+}
